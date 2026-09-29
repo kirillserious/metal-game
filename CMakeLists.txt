@@ -7,9 +7,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include(shaders/CompileShaders.cmake)
 
+find_package(argparse CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
+
+# Apple libraries
 
 find_library(FRAMEWORK_METAL Metal REQUIRED)
 find_library(FRAMEWORK_FOUNDATION Foundation REQUIRED)
@@ -23,6 +26,13 @@ set(APPLE_FRAMEWORKS
     ${FRAMEWORK_QUARTZCORE}
     ${FRAMEWORK_APPKIT}
     ${FRAMEWORK_COCOA}
+)
+
+# UFBX library
+
+add_library(ufbx_lib STATIC 
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/ufbx/ufbx.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/ufbx/ufbx.h
 )
 
 # metal-game library
@@ -76,13 +86,14 @@ target_link_libraries(metal-game PRIVATE
     metal_game_pkg
 )
 
-# hello_world_cmd
+# fbx analyzer cmd
 
-add_executable(hello-world
-    src/cmd/hello-world/main.cpp
+add_executable(fbx-analyzer
+    src/cmd/fbx-analyzer/main.cpp
 ) 
 
-target_link_libraries(hello-world PRIVATE
+target_link_libraries(fbx-analyzer PRIVATE
+    argparse::argparse
     spdlog::spdlog
-    metal_game_pkg
+    ufbx_lib
 )

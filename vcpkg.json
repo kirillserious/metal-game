@@ -1,7 +1,8 @@
 {
   "dependencies": [
     "fmt",
+    "glfw3",
     "spdlog",
-    "glfw3"
+    "argparse"
   ]
 }

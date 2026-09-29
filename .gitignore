@@ -1,6 +1,6 @@
 .DS_Store
 build
-third_party
+third_party/metal-cpp
 vcpkg_installed
 
 CMakeUserPresets.json
