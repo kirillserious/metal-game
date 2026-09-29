@@ -1,8 +1,5 @@
 #include <exception>
 
-#define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
-
 #include <spdlog/spdlog.h>
 #include "GraphicsContext.hpp"
 #include "Renderer.hpp"
