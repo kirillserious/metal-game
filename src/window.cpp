@@ -1,4 +1,4 @@
-#include "window.hpp"
+#include "Window.hpp"
 #define GLFW_EXPOSE_NATIVE_COCOA
 #include <GLFW/glfw3native.h>
 #include <iostream>

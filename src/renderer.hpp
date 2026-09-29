@@ -1,6 +1,8 @@
 #pragma once
 
-#include "graphics_context.hpp"
+#include "GraphicsContext.hpp"
+#include "Pipeline.hpp"
+#include "ShaderLibrary.hpp"
 
 class Renderer
 {
@@ -12,4 +14,6 @@ public:
 
 private:
     const GraphicsContext &_context;
+    ShaderLibrary _library;
+    Pipeline _cubePipeline;
 };

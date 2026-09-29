@@ -5,14 +5,29 @@ project(MetalGame)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+include(shaders/CompileShaders.cmake)
+
 add_executable(${PROJECT_NAME}
     src/main.cpp
-    src/graphics_context.cpp
-    src/graphics_context.hpp
-    src/renderer.cpp
-    src/renderer.hpp
-    src/window.cpp
-    src/window.hpp
+    src/GraphicsContext.cpp
+    src/GraphicsContext.hpp
+    src/Renderer.cpp
+    src/Renderer.hpp
+    src/ShaderLibrary.cpp
+    src/ShaderLibrary.hpp
+    src/VertexLayout.cpp
+    src/VertexLayout.hpp
+    src/Window.cpp
+    src/Window.hpp
+    src/Pipeline.hpp
+    src/Pipeline.cpp
+    src/CubeVertex.hpp
+)
+
+add_metal_shaders_directory(
+    ${PROJECT_NAME} 
+    "${CMAKE_CURRENT_SOURCE_DIR}/shaders" 
+    "default"
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE 
@@ -41,5 +56,3 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     ${FRAMEWORK_APPKIT}
     ${FRAMEWORK_COCOA}
 )
-
-configure_file(shaders/Shaders.metal Shaders.metal COPYONLY)

@@ -8,7 +8,7 @@
 // Нам нужен AppKit, чтобы дотянуться до нативного окна Mac
 #define GLFW_EXPOSE_NATIVE_COCOA
 
-#include "graphics_context.hpp"
+#include "GraphicsContext.hpp"
 #include <iostream>
 #include <spdlog/spdlog.h>
 

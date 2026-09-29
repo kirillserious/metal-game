@@ -4,9 +4,9 @@
 #include <GLFW/glfw3.h>
 
 #include <spdlog/spdlog.h>
-#include "graphics_context.hpp"
-#include "renderer.hpp"
-#include "window.hpp"
+#include "GraphicsContext.hpp"
+#include "Renderer.hpp"
+#include "Window.hpp"
 
 int main()
 {
