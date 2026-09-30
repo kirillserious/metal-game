@@ -1,6 +1,7 @@
 #include "ShaderLibrary.hpp"
 
 #include <Metal/Metal.hpp>
+#include <iostream>
 #include <unordered_map>
 #include <string>
 

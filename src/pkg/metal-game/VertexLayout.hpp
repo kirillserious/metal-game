@@ -7,7 +7,7 @@ public:
     VertexLayout();
 
     VertexLayout &
-    addAttribute(uint32_t attribIndex, MTL::VertexFormat format, uint32_t size, uint32_t offset);
+    addAttribute(uint32_t attribIndex, MTL::VertexFormat format, uint32_t offset);
 
     VertexLayout &
     setStride(uint32_t stride);

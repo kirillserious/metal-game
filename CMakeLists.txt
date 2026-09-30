@@ -11,6 +11,7 @@ find_package(argparse CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
+find_package(yaml-cpp CONFIG REQUIRED)
 
 # Apple libraries
 
@@ -31,15 +32,29 @@ set(APPLE_FRAMEWORKS
 # UFBX library
 
 add_library(ufbx_lib STATIC 
-    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/ufbx/ufbx.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/ufbx/ufbx.h
+    third_party/ufbx/ufbx.c
+    third_party/ufbx/ufbx.h
 )
+
+target_include_directories(ufbx_lib PUBLIC 
+    third_party/ufbx
+)
+
+# mesh-file library
+
+add_subdirectory(src/pkg/mesh-file)
 
 # metal-game library
 
 add_library(metal_game_pkg STATIC
+    src/pkg/metal-game/AssetsManifest.hpp
+    src/pkg/metal-game/CubeVertex.hpp
     src/pkg/metal-game/GraphicsContext.cpp
     src/pkg/metal-game/GraphicsContext.hpp
+    src/pkg/metal-game/Mesh.hpp
+    src/pkg/metal-game/MeshBuilder.hpp
+    src/pkg/metal-game/Pipeline.cpp
+    src/pkg/metal-game/Pipeline.hpp
     src/pkg/metal-game/Renderer.cpp
     src/pkg/metal-game/Renderer.hpp
     src/pkg/metal-game/ShaderLibrary.cpp
@@ -48,9 +63,8 @@ add_library(metal_game_pkg STATIC
     src/pkg/metal-game/VertexLayout.hpp
     src/pkg/metal-game/Window.cpp
     src/pkg/metal-game/Window.hpp
-    src/pkg/metal-game/Pipeline.cpp
-    src/pkg/metal-game/Pipeline.hpp
-    src/pkg/metal-game/CubeVertex.hpp
+
+    
 )
 
 target_include_directories(metal_game_pkg 
@@ -65,7 +79,9 @@ target_link_libraries(metal_game_pkg PRIVATE
     fmt::fmt
     spdlog::spdlog
     glfw
+    yaml-cpp::yaml-cpp
     ${APPLE_FRAMEWORKS}
+    mesh-file-pkg
 )
 
 add_metal_shaders_directory(
@@ -83,16 +99,36 @@ add_executable(metal-game
 
 target_link_libraries(metal-game PRIVATE
     spdlog::spdlog
+    mesh-file-pkg
     metal_game_pkg
 )
 
-# fbx analyzer cmd
+add_custom_command(TARGET metal-game POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_CURRENT_SOURCE_DIR}/assets"
+        "$<TARGET_FILE_DIR:metal-game>/assets"
+)
 
-add_executable(fbx-analyzer
-    src/cmd/fbx-analyzer/main.cpp
+# fbx baker cmd
+
+add_executable(fbx-baker
+    src/cmd/fbx-baker/main.cpp
 ) 
 
-target_link_libraries(fbx-analyzer PRIVATE
+target_link_libraries(fbx-baker PRIVATE
+    argparse::argparse
+    spdlog::spdlog
+    ufbx_lib
+    mesh-file-pkg
+)
+
+# fbx inspector cmd
+
+add_executable(fbx-inspector
+    src/cmd/fbx-inspector/main.cpp
+) 
+
+target_link_libraries(fbx-inspector PRIVATE
     argparse::argparse
     spdlog::spdlog
     ufbx_lib

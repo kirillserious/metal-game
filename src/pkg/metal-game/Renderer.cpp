@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "CubeVertex.hpp"
+#include "MeshRenderer.hpp"
 #include "Pipeline.hpp"
 #include "ShaderLibrary.hpp"
 
@@ -30,7 +31,7 @@ std::vector<uint16_t> cubeIndices = {
     4, 5, 1, 1, 0, 4  // Нижняя
 };
 
-Renderer::Renderer(const GraphicsContext &context)
+Renderer::Renderer(const GraphicsContext &context, MetalMesh &treeMesh, MTL::Texture *treeTexture)
     : _context(context),
       _library(context.getDevice()),
       _cubePipeline(
@@ -39,7 +40,16 @@ Renderer::Renderer(const GraphicsContext &context)
           "vertexMain",
           "fragmentMain",
           CubeVertex::getDescriptor(),
-          MTL::PixelFormatBGRA8Unorm)
+          MTL::PixelFormatBGRA8Unorm),
+      _treeMesh(treeMesh),
+      _treePipeline(
+          context.getDevice(),
+          _library,
+          "vertexMesh",
+          "fragmentMesh",
+          getVertexDescriptor(),
+          MTL::PixelFormatBGRA8Unorm),
+      _treeTexture(treeTexture)
 {
 }
 
@@ -71,7 +81,15 @@ void Renderer::drawFrame()
     // 4. Создаем энкодер команд. Пока мы ничего не рисуем (нет 3D моделей),
     // поэтому мы его просто создаем и сразу закрываем. Сама очистка произойдет автоматически!
     MTL::RenderCommandEncoder *encoder = commandBuffer->renderCommandEncoder(renderPassDesc);
+    encoder->setRenderPipelineState(_treePipeline.getNative());
 
+    MeshRenderer meshRenderer;
+    std::unordered_map<std::string, MTL::Texture *> treeTextures = {
+        {"wood", _treeTexture},
+        {"foliage", _treeTexture}};
+    meshRenderer.DrawMesh(encoder, _treeMesh, treeTextures);
+
+    /*
     encoder->setRenderPipelineState(_cubePipeline.getNative());
 
     MTL::Buffer *vertexBuffer = _context.getDevice()->newBuffer(
@@ -92,15 +110,16 @@ void Renderer::drawFrame()
         indexBuffer,                                   // Буфер с индексами
         0                                              // Смещение от начала буфера
     );
-
+    */
     encoder->endEncoding();
 
     // 5. Отправляем кадр на экран монитора
     commandBuffer->presentDrawable(drawable);
+
     commandBuffer->commit(); // Видеокарта, погнали!
 
     // Освобождаем временные дескрипторы кадра (управление памятью)
-    vertexBuffer->release();
-    indexBuffer->release();
+    // vertexBuffer->release();
+    // indexBuffer->release();
     renderPassDesc->release();
 }

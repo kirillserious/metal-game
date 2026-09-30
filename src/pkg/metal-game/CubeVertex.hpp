@@ -13,8 +13,8 @@ struct CubeVertex
     static MTL::VertexDescriptor *getDescriptor()
     {
         return VertexLayout()
-            .addAttribute(0, MTL::VertexFormatFloat3, sizeof(position), offsetof(CubeVertex, position))
-            .addAttribute(1, MTL::VertexFormatFloat4, sizeof(color), offsetof(CubeVertex, color))
+            .addAttribute(0, MTL::VertexFormatFloat3, offsetof(CubeVertex, position))
+            .addAttribute(1, MTL::VertexFormatFloat4, offsetof(CubeVertex, color))
             .setStride(sizeof(CubeVertex))
             .build();
     }

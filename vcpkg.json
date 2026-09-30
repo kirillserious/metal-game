@@ -1,8 +1,9 @@
 {
   "dependencies": [
+    "argparse",
     "fmt",
     "glfw3",
     "spdlog",
-    "argparse"
+    "yaml-cpp"
   ]
 }

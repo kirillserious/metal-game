@@ -3,4 +3,7 @@ build
 third_party/metal-cpp
 vcpkg_installed
 
+assets/models/trees
+
+user-assets
 CMakeUserPresets.json

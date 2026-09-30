@@ -36,9 +36,18 @@ function(add_metal_shaders_directory TARGET_NAME SHADERS_DIR OUTPUT_LIB_NAME)
         COMMENT "Linking Metal library: ${OUTPUT_LIB_NAME}.metallib"
     )
 
-    # Привязываем скомпилированную библиотеку к указанному таргету
-    target_sources(${TARGET_NAME} PRIVATE ${OUTPUT_METALLIB})
+    # 1. Создаем кастомный таргет для сборки шейдеров. 
+    # Он гарантирует, что команда линковки metallib точно выполнится.
+    set(SHADERS_TARGET "${TARGET_NAME}_${OUTPUT_LIB_NAME}_shaders")
+    add_custom_target(${SHADERS_TARGET} DEPENDS ${OUTPUT_METALLIB})
 
-    # Добавляем в ресурсы приложения (Bundle)
+    # 2. Делаем так, чтобы основное приложение зависело от сборки шейдеров
+    add_dependencies(${TARGET_NAME} ${SHADERS_TARGET})
+
+    # 3. Добавляем готовый .metallib в ресурсы Bundle приложения
+    # (Чтобы CMake понял, что это ресурс, а не исходный код, пропишем GENERATED)
+    set_source_files_properties(${OUTPUT_METALLIB} PROPERTIES GENERATED TRUE)
+    target_sources(${TARGET_NAME} PRIVATE ${OUTPUT_METALLIB})
     set_property(TARGET ${TARGET_NAME} APPEND PROPERTY RESOURCE "${OUTPUT_METALLIB}")
+    
 endfunction()

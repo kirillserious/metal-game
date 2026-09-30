@@ -9,7 +9,7 @@ VertexLayout::VertexLayout()
 
 // Метод добавления атрибута. Возвращает ссылку на себя для цепочки вызовов (Fluent API)
 VertexLayout &
-VertexLayout::addAttribute(uint32_t attribIndex, MTL::VertexFormat format, uint32_t size, uint32_t offset)
+VertexLayout::addAttribute(uint32_t attribIndex, MTL::VertexFormat format, uint32_t offset)
 {
     auto attr = _descriptor->attributes()->object(attribIndex);
     attr->setFormat(format);
