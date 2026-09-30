@@ -39,6 +39,58 @@ void inspect_fbx_file(const char *filepath)
             std::cout << "    * Текстура: " << tex.texture->name.data
                       << " (Файл на диске: " << tex.texture->filename.data << ")" << std::endl;
         }
+
+        // 1. Получаем базовый цвет (Diffuse / Base Color)
+        // ufbx автоматически заполняет mat->pbr.base_color.factor, конвертируя старые материалы
+        ufbx_vec3 color = mat->pbr.base_color.value_vec3;
+        std::cout << "    * Цвет (RGB): ["
+                  << color.x << ", "
+                  << color.y << ", "
+                  << color.z << "]" << std::endl;
+
+        // 2. Альтернативный способ: чтение напрямую из свойств FBX, если автоматическая конвертация не сработала
+        ufbx_prop *diffuse_prop = ufbx_find_prop(&mat->props, "DiffuseColor");
+        if (diffuse_prop)
+        {
+            ufbx_vec3 color_raw = diffuse_prop->value_vec3;
+            std::cout << "    * Исходный DiffuseColor: ["
+                      << color_raw.x << ", " << color_raw.y << ", " << color_raw.z << "]" << std::endl;
+        }
+
+        // 3. Чтение параметров блика (Specular)
+        ufbx_prop *specular_prop = ufbx_find_prop(&mat->props, "SpecularColor");
+        if (specular_prop)
+        {
+            ufbx_vec3 spec = specular_prop->value_vec3;
+            std::cout << "    * Блик Specular: [" << spec.x << ", " << spec.y << ", " << spec.z << "]" << std::endl;
+        }
+
+        ufbx_texture *diffuse_tex = mat->pbr.base_color.texture;
+        if (diffuse_tex)
+        {
+            std::cout << "    * Диффузная карта: " << diffuse_tex->filename.data << std::endl;
+        }
+
+        ufbx_texture *normal_tex = mat->pbr.normal_map.texture;
+        if (normal_tex)
+        {
+            std::cout << "    * Карта нормалей: " << normal_tex->filename.data << std::endl;
+        }
+
+        // 2. Универсальный обход ВСЕХ свойств материала
+        for (size_t j = 0; j < mat->props.props.count; ++j)
+        {
+            ufbx_prop &prop = mat->props.props.data[j];
+
+            // Передаем сам mat вместо &mat->element
+            ufbx_texture *tex = ufbx_find_prop_texture(mat, prop.name.data);
+
+            if (tex)
+            {
+                std::cout << "    * Текстура в свойстве \"" << prop.name.data << "\": "
+                          << tex->filename.data << std::endl;
+            }
+        }
     }
 
     // 3. Проверяем, есть ли анимация (например, покачивание веток)
